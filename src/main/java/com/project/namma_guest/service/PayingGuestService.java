@@ -8,9 +8,6 @@ import com.project.namma_guest.repository.PayingGuestRepository;
 import com.project.namma_guest.repository.UsersRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,10 +51,7 @@ public class PayingGuestService {
                 payingGuest.setContactNumber(hostel.getContactNumber());
                 payingGuest.setEmail(hostel.getEmail());
                 payingGuest.setWhatsappNumber(hostel.getWhatsappNumber());
-
-                GeometryFactory geometryFactory = new GeometryFactory();
-//                Point point = geometryFactory.createPoint(new Coordinate(hostel.getLocation().getX(), hostel.getLocation().getY()));
-//                payingGuest.setLocation(point);
+                payingGuest.setLocation(hostel.getLocation());
 
                 usersRepository.save(owner);
                 payingGuestRepository.save(payingGuest);
@@ -94,4 +88,34 @@ public class PayingGuestService {
         List<PayingGuest> listOfPayingGuestWithPagination = payingGuestRepository.findAll(pageable).stream().toList();
         return ResponseEntity.ok(listOfPayingGuestWithPagination);
     }
+    @Transactional
+    public ResponseEntity<?> hostelDetails (String id) {
+
+        if (id == null || id.isEmpty()) throw new IllegalArgumentException("id cannot be null"); //400
+        if (!Utilities.isValidEmail(id)) throw new IllegalArgumentException("Invalid email."); //400
+
+        Users owner = usersRepository.findUsersByEmail(id);
+
+        if(owner == null) throw new IllegalArgumentException("User not found."); //404
+
+        PayingGuest payingGuest = owner.getOwnsPayingGuest();
+        if(payingGuest.getPayingGuestId().equals(owner.getUserUniqueId())) {
+            throw new IllegalArgumentException("Paying guest already exists."); //403
+        }
+
+        Hostel hostel = new Hostel(
+                payingGuest.getName(),
+                payingGuest.getAddress(),
+                payingGuest.getCity(),
+                payingGuest.getState(),
+                payingGuest.getCountry(),
+                payingGuest.getEmail(),
+                payingGuest.getContactNumber(),
+                payingGuest.getWhatsappNumber(),
+                payingGuest.getLocation()
+        );
+        return ResponseEntity.ok(hostel);
+
+    }
+
 }

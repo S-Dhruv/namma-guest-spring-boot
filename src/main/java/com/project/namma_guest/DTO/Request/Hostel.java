@@ -1,11 +1,11 @@
 package com.project.namma_guest.DTO.Request;
 
-import com.project.namma_guest.data.LatLng;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.locationtech.jts.geom.Point;
+
+import java.awt.*;
 
 @Getter
 @Setter
@@ -27,7 +27,7 @@ public class Hostel {
     private String whatsappNumber;
 
     //Hostel Location
-    private LatLng location;
+    private Point location;
 
     // Override toString method
     @Override

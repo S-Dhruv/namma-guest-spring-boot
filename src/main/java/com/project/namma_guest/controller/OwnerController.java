@@ -57,21 +57,38 @@ public class OwnerController {
 
     // Load the hostel details from the database & to make a user look
     @GetMapping("/hostelDetails/{id}")
-    public ResponseEntity<String> hostelDetails(@PathVariable String id) {
+    public ResponseEntity<?> hostelDetails(@PathVariable String id) {
         //TODO: Implement this method & return the details about a PG
         // Step 0 - Check if the Id is valid or not (eg null) - 400 Bad Request
         // Step 1 - Check the payingGuestId if not exist - 404 NOT FOUND
         // Step 2 - Check the user id is the owner to paying guest id - 403 Forbidden
-        // Step 3 - Get the details of the PG weather visibility is public or not - 403 FORBIDDEN
+        // Step 3 - Get the details of the PG whether visibility is public or not - 403 FORBIDDEN
         // Step 4 - Return the details
-        String str = "Hostel Details: getEmail";
-        return ResponseEntity.ok(str);
+        try{
+            return payingGuestService.hostelDetails(id);
+        }
+        catch(Exception e){
+            if(e.getMessage().contains("id cannot be null.")) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("id cannot be null.");
+            }
+            else if(e.getMessage().contains("Invalid email.")){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email.");
+            }
+            else if(e.getMessage().contains("User not found")){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            }
+            else if(e.getMessage().contains("Paying guest already exists.")){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Paying guest already exists.");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error.");
     }
 
     // Delete the hostel details from the database
     @DeleteMapping("/hostelDeletion")
     public ResponseEntity<String> hostelDeletion() {
         //TODO: To be Implemented later on kindly dont touch it
+
         String str = "Hostel Details: deleteEmail";
         return ResponseEntity.ok("TO BE IMPLEMENTED AT LAST");
     }
