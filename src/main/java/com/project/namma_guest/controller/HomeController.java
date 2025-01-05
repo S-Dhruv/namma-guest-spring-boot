@@ -64,7 +64,13 @@ public class HomeController {
         // Step 1 - Get the user details using Email (later from the JWT token) - 404 Not Found
         // Step 2 - If user not found - return 404 Not Found status code
         // Step 3 - Return the details - 200 OK
-        return ResponseEntity.ok("My Profile");
+        String profile = String.valueOf(userService.getProfile(emailId));
+        try{
+            return ResponseEntity.ok(profile);
+        }
+        catch(IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     //Modify the User with respect to the user request

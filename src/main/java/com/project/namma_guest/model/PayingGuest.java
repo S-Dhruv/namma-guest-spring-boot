@@ -2,11 +2,9 @@ package com.project.namma_guest.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.catalina.User;
-import org.hibernate.annotations.Type;
-import org.locationtech.jts.geom.Point;
+import org.hibernate.annotations.JdbcTypeCode;
 
-import java.util.List;
+import java.awt.*;
 
 @Entity
 @AllArgsConstructor
@@ -40,6 +38,8 @@ public class PayingGuest {
     private String whatsappNumber;
 
     //Location
+    @JdbcTypeCode(java.sql.Types.VARCHAR)
+    @Column(columnDefinition = "json")
     private Point location;
     private boolean isVerified;
     private String guestType;
